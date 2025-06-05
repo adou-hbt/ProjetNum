@@ -19,14 +19,23 @@ def Etats_stationnaires(n_Etats,m,L):
     hbar = 1.055e-34       # constante de Planck réduite
     eV = 1.602e-19
     
-    Etats = np.zeros(n_Etats + 1)
+    Etats = np.zeros(n_Etats)
     for n in range(1 ,n_Etats+1):
         En = pow((hbar * n * np.pi),2) / (2 * m * pow(L*pow(10,-9),2))
         En_eV = En/eV
-        Etats[n] = En_eV - v0
-        print(n," ",Etats[n])
+        Etats[n-1] = En_eV - v0
     return Etats
 
+def Vitesse(Etats,m):
+    eV = 1.602e-19
+    vitesse= []
+
+    for E in Etats:
+        if E > 0:
+            print(E*eV/m)
+            v = np.sqrt(2*E*eV/m)
+            vitesse.append(v)
+    return np.array(vitesse)
 
 #~INITIALISATION DES VARIABLES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Variables de l'environnement (espace, temps et animation)
@@ -44,7 +53,7 @@ sigma=0.05
 A=1/(math.sqrt(sigma*math.sqrt(math.pi)))
 
 #Variables de l'équation de schrodinger
-v0=-8.6e-4#-4000
+v0=-20
 e=5#Valeur du rapport E/V0
 E=e*v0
 k=math.sqrt(2*abs(E))   #nombre d'éléctrons
@@ -69,11 +78,13 @@ densite[0,:] = np.absolute(cpt[:]) ** 2
 final_densite=np.zeros((n_frame,nx))
 
 
-m = 3.323e-27#9.109e-31          # masse d’un éléctron
+m = 9.109e-31          # masse d’un éléctron
 L = 0.45
 
 Etats = Etats_stationnaires(10,m,L)
-
+vitesse = Vitesse(Etats,m)
+print(Etats)
+print(vitesse)
 #~MODELISATION FONCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 it=0
 for i in range(1, nt):
@@ -97,6 +108,9 @@ plt.ylim(0,13)
 plt.xlim(0,2)
 
 plt.plot(o,V,label="Potentiel")
+
+for i in Etats:
+    plt.plot([0,2],[i,i], color="red")
 
 plt.title(plot_title)
 plt.xlabel("x")
