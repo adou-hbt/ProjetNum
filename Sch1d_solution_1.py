@@ -14,6 +14,20 @@ def animate(j):
     line.set_data(o, final_densite[j,:]) #Crée un graphique pour chaque densite sauvegarde
     return line,
 
+#~CALCUL ETATS STATIONNAIRES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def Etats_stationnaires(n_Etats,m,L):
+    hbar = 1.055e-34       # constante de Planck réduite
+    eV = 1.602e-19
+    
+    Etats = np.zeros(n_Etats + 1)
+    for n in range(1 ,n_Etats+1):
+        En = pow((hbar * n * np.pi),2) / (2 * m * pow(L*pow(10,-9),2))
+        En_eV = En/eV
+        Etats[n] = En_eV - v0
+        print(n," ",Etats[n])
+    return Etats
+
+
 #~INITIALISATION DES VARIABLES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Variables de l'environnement (espace, temps et animation)
 dt=1E-7
@@ -25,12 +39,12 @@ n_frame = nd
 
 #Variables du paquet d'ondes gaussien
 s=dt/(dx**2)
-xc=0.6*(10**(-9))
-sigma=0.05*(10**(-9))
+xc=0.6
+sigma=0.05
 A=1/(math.sqrt(sigma*math.sqrt(math.pi)))
 
 #Variables de l'équation de schrodinger
-v0=-20
+v0=-8.6e-4#-4000
 e=5#Valeur du rapport E/V0
 E=e*v0
 k=math.sqrt(2*abs(E))   #nombre d'éléctrons
@@ -54,21 +68,11 @@ densite=np.zeros((nt,nx))
 densite[0,:] = np.absolute(cpt[:]) ** 2
 final_densite=np.zeros((n_frame,nx))
 
-#Variables états stationnaires
-hbar = 1.055e-34       # constante de Planck réduite
-m = 9.109e-31          # masse d’un éléctron
-eV = 1.602e-19
-L = xc + sigma
 
+m = 3.323e-27#9.109e-31          # masse d’un éléctron
+L = 0.45
 
-#~CALCUL ETATS STATIONNAIRES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-n_Etats = 5
-Etats = np.zeros(n_Etats + 1)
-for n in range(1 ,n_Etats+1):
-    En = ((hbar * n * np.pi)**2) / (2 * m * L**2)
-    En_eV = En/eV
-    Etats[n] = En_eV - v0
-    print(n," ",Etats[n])
+Etats = Etats_stationnaires(10,m,L)
 
 #~MODELISATION FONCTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 it=0
@@ -85,49 +89,15 @@ for i in range(1,nt):
         it+=1
         final_densite[it][:]=densite[i][:]
 
-# it=0
-# for i in range(1, nt):
-#     if i % 2 != 0:
-#         b[1:-1]=im[1:-1]
-#         im[1:-1] = im[1:-1] + s * (re[2:] + re[:-2]) - 2 * re[1:-1] * (s + V[1:-1] * dt)
-#         if (i - 1) % 1000 == 0:
-#             it+=1
-#             densite[it,1:-1] = re[1:-1]*re[1:-1] + im[1:-1]*b[1:-1]
-#     else:
-#         re[1:-1] = re[1:-1] - s * (im[2:] + im[:-2]) + 2 * im[1:-1] * (s + V[1:-1] * dt)
-
-# it = 0
-# for i in range(1, nt):
-#     if i % 2 != 0:
-#         it += 1
-#         im[1:-1] = im[1:-1] + s * (re[2:] + re[:-2]) - 2 * re[1:-1] * (s + V[1:-1] * dt)
-#         densite[it][1:-1] = im[1:-1]**2 + re[1:-1]** 2
-#     else:
-#         re[1:-1] = re[1:-1] - s * (im[2:] + im[:-2]) + 2 * im[1:-1] * (s + V[1:-1] * dt)
-# #
-# it=0
-# for i in range (1,nt):
-#     if (i%2!=0):
-#         if((i-1)%1000==0):
-#             it=it+1
-#             for cpt in range (1,nx-1):
-#                 #b[cpt]=im[cpt]
-#                 im[cpt]=im[cpt]+(s*re[cpt+1])+(s*re[cpt-1])-(2*re[cpt]*(s+(V[cpt]*dt)))
-#                 densite[it][cpt]=im[cpt]*im[cpt]+(re[cpt]**2)
-#         else:
-#              for cpt in range (1,nx-1):
-#                  im[cpt]=im[cpt]+(s*re[cpt+1])+(s*re[cpt-1])-(2*re[cpt]*(s+(V[cpt]*dt)))
-#     else:
-#         for cpt in range (1,nx-1):
-#             re[cpt]=re[cpt]-(s*im[cpt+1])-(s*im[cpt-1])+(2*im[cpt]*(s+(V[cpt]*dt)))
-
 #~ANIMATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 plot_title = "Marche Ascendante avec E/Vo="+str(e)
 fig = plt.figure() # initialise la figure principale
 line, = plt.plot([], [])
 plt.ylim(0,13)
 plt.xlim(0,2)
+
 plt.plot(o,V,label="Potentiel")
+
 plt.title(plot_title)
 plt.xlabel("x")
 plt.ylabel("Densité de probabilité de présence")
