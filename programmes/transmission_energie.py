@@ -5,21 +5,18 @@ import matplotlib.pyplot as plt
 hbar = 1.0545718e-34  # constante de planck réduite
 m = 9.10938356e-31    # masse de l'électron
 
-# Paramètres du puits
-V0 = 5.0          # profondeur du puits
-
-a = 1E-18          # largeur du puits
+# Puit
+V0 = 5             # profondeur du puits
+L = 1E-18          # largeur du puits
 
 # Énergies
 E= np.linspace(0.1, 30, 1000)
 
-
 # Vecteurs d'onde de la région de l'intérieur du puits
 k2 = np.sqrt(2 * m * (E + V0)) / hbar
 
-
-# Formule de transmission
-T = 1 / (1 + (V0**2 / (4 * E * (E + V0))) * np.sin(k2 * a)**2)
+# Formule de transmission par rapport à E, v0, k2 et L
+T = 1 / (1 + (V0**2 / (4 * E * (E + V0))) * np.sin(k2 * L)**2)
 
 # Plot
 plt.figure(figsize=(10,6))
